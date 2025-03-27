@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Entreprenelles - Générateur de lien WhatsApp</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- Include Playfair, Poppins and Roboto fonts -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;500&family=Roboto:wght@700&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- 1) intl-tel-input CSS (with flags) -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/intl-tel-input@17.0.8/build/css/intlTelInput.min.css"
+  />
+
+  <style>
+    :root {
+      --primary: #000;            /* black for buttons */
+      --accent: #6fad6f;         /* green background */
+      --accent-hover: #5c925c;
+      --text: #1a1a1a;
+      --border: #e5e7eb;
+      --transition: 0.3s ease;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* Body with the green background */
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--accent);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header: same style as original */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.5rem 2rem;
+      border-bottom: 1px solid var(--border); /* thin line */
+    }
+    .nav-left, .nav-right {
+      flex: 1;
+    }
+    .logo {
+      flex: 0;
+      text-align: center;
+    }
+    .logo img {
+      max-height: 50px;
+      width: auto;
+    }
+    .social {
+      text-align: right;
+    }
+    .social a {
+      text-decoration: none;
+      transition: color var(--transition);
+    }
+    .social a img {
+      height: 24px;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+    .social a:hover img {
+      opacity: 0.8;
+    }
+
+    /* Main content: WhatsApp Link Creator */
+    main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    .whatsapp-section {
+      text-align: center;
+      max-width: 500px;
+      width: 100%;
+    }
+
+    .whatsapp-section h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      margin-bottom: 2rem;
+      color: #fff;
+    }
+
+    .phone-group {
+      margin-bottom: 1.5rem;
+    }
+
+    /* Phone input (with flags) */
+    #phone-input {
+      width: 100%;
+      padding: 0.6rem 0.8rem;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background: #fff;
+      color: #000;
+    }
+    #phone-input:focus {
+      outline: 2px solid #999;
+    }
+
+    /* "Créer le lien" button */
+    .btn-generate {
+      background-color: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: background-color var(--transition), transform var(--transition);
+      margin-bottom: 1rem;
+    }
+    .btn-generate:hover {
+      background-color: #333;
+      transform: translateY(-2px);
+    }
+
+    /* Output link container (hidden by default) */
+    .link-container {
+      display: none;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    #result-link {
+      width: 100%;
+      font-size: 0.95rem;
+      padding: 0.6rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background: #fff;
+      color: #000;
+    }
+
+    .btn-copy {
+      background-color: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 0.6rem 1rem;
+      font-size: 0.9rem;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: background-color var(--transition), transform var(--transition);
+      align-self: center;
+    }
+    .btn-copy:hover {
+      background-color: #333;
+      transform: translateY(-2px);
+    }
+
+    /* Footer: same style as original */
+    footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      font-size: 0.85rem;
+      color: var(--text);
+      border-top: 1px solid var(--border);
+    }
+
+    /* Make the dropdown have a green vibe (optional) */
+    .iti__country-list {
+      background-color: #d4edd4;
+    }
+    .iti__country:hover {
+      background-color: #b3e2b3; 
+    }
+
+    /* Existing: Adjust styling for screens up to 768px */
+    @media (max-width: 768px) {
+      header {
+        flex-direction: column;
+        text-align: center;
+        padding: 1rem;
+      }
+      .logo img {
+        max-height: 40px;
+      }
+      .whatsapp-section h1 {
+        font-size: 1.6rem;
+      }
+    }
+
+    /* NEW: Additional tweak for small phone screens (up to 480px) */
+    @media (max-width: 480px) {
+      .whatsapp-section h1 {
+        font-size: 1.4rem;
+      }
+      #phone-input {
+        font-size: 0.9rem;
+        padding: 0.5rem 0.7rem;
+      }
+      .btn-generate {
+        font-size: 0.9rem;
+        padding: 0.6rem 1rem;
+      }
+      .btn-copy {
+        font-size: 0.85rem;
+        padding: 0.5rem 0.8rem;
+      }
+      #result-link {
+        font-size: 0.9rem;
+        padding: 0.5rem 0.7rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="nav-left"></div>
+    <div class="logo">
+      <img 
+        src="https://i.ibb.co/7NBnnQVh/Publication-instagram-minimaliste-beige.png" 
+        alt="Logo Entreprenelles" 
+      />
+    </div>
+    <div class="nav-right">
+      <div class="social">
+        <a href="https://www.tiktok.com/@entreprenelles">
+          <img 
+            src="https://i.ibb.co/8gy02J4n/Publication-instagram-minimaliste-beige-3.png" 
+            alt="TikTok Icon" 
+          />
+        </a>
+        <a href="https://www.instagram.com/entreprenelles.com_/">
+          <img 
+            src="https://i.ibb.co/C5QqWx1D/Publication-instagram-minimaliste-beige-2.png" 
+            alt="Instagram Icon" 
+          />
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main: WhatsApp Link Creator -->
+  <main>
+    <section class="whatsapp-section">
+      <h1>Créez votre lien WhatsApp</h1>
+      <div class="phone-group">
+        <input 
+          type="tel" 
+          id="phone-input" 
+          placeholder="Entrez votre numéro" 
+        />
+      </div>
+      <button class="btn-generate" onclick="generateWhatsAppLink()">Créer le lien</button>
+      <div class="link-container" id="link-container">
+        <input 
+          type="text" 
+          id="result-link" 
+          readonly 
+          placeholder="Votre lien apparaîtra ici..." 
+        />
+        <button class="btn-copy" onclick="copyLink()">Copier</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    &copy; 2025 Entreprenelles. Conçu sans prise de tête de codage.
+  </footer>
+
+  <!-- 2) intl-tel-input JS from UNPKG (CDN) -->
+  <script
+    src="https://unpkg.com/intl-tel-input@17.0.8/build/js/intlTelInput.min.js"
+  ></script>
+  <!-- 3) (Optional) The utils script for advanced formatting -->
+  <script
+    src="https://unpkg.com/intl-tel-input@17.0.8/build/js/utils.js"
+  ></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const phoneInputField = document.querySelector("#phone-input");
+      const resultLink = document.querySelector("#result-link");
+      const linkContainer = document.querySelector("#link-container");
+
+      // Initialize intlTelInput, ensuring flags are loaded from the same CDN
+      const iti = window.intlTelInput(phoneInputField, {
+        preferredCountries: ["fr", "us", "gb", "ca"],
+        separateDialCode: true,
+        allowDropdown: true,
+        autoHideDialCode: false,
+        nationalMode: false,
+        utilsScript: "https://unpkg.com/intl-tel-input@17.0.8/build/js/utils.js"
+      });
+
+      // Generate the WhatsApp link using iti.getNumber()
+      window.generateWhatsAppLink = function() {
+        const fullNumber = iti.getNumber(); // e.g. "+33123456789"
+        if (fullNumber && fullNumber !== "+") {
+          // Remove the leading '+' for wa.me
+          const numberWithoutPlus = fullNumber.replace('+', '');
+          const link = `https://wa.me/${numberWithoutPlus}`;
+          resultLink.value = link;
+          linkContainer.style.display = "flex";
+        } else {
+          resultLink.value = "Veuillez entrer un numéro valide.";
+          linkContainer.style.display = "flex";
+        }
+      };
+
+      // Copy the generated link
+      window.copyLink = function() {
+        if (resultLink.value && !resultLink.value.includes("Veuillez entrer")) {
+          resultLink.select();
+          document.execCommand("copy");
+          alert("Lien WhatsApp copié !");
+        }
+      };
+    });
+  </script>
+</body>
+</html>
